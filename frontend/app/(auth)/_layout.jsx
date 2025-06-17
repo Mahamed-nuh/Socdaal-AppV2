@@ -6,7 +6,7 @@ export default function AuthLayout() {
     <GuestOnly>
     <Stack
       screenOptions={{
-        headerShown: false, // Hide default header for a clean auth UI
+        headerShown: false, 
       }}
     />
     </GuestOnly>

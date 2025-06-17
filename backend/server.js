@@ -1,35 +1,33 @@
-require('dotenv').config();
-
 const express = require('express');
-const companyRoute = require('./routes/companyRoute');
-const connectDB = require('./config/db');
-const ticketRoute = require('./routes/ticketRoute');
-const busRoute = require('./routes/busRoute');
-const userRoute = require('./routes/userRouter'); // Changed from userRouter to userRoute
+require('dotenv').config();
+const busRoutes = require('./routes/Buses')
+const mongoose = require('mongoose');
+const ticketRoutes = require('./routes/Tickets');
 
 //express app
 const app = express();
 
 //middleware
-app.use(express.json())
+app.use(express.json()); // to parse JSON bodies
 
 app.use((req, res, next) => {
-    console.log(req.path, req.method)
-    next()
-})
+    console.log(req.path, req.method);
+    next();
+});
 
 //routes
-app.use('/api/company', companyRoute);
-app.use('/api/ticket', ticketRoute);
-app.use('/api/buses', busRoute);  
-app.use('/api/user', userRoute); 
+app.use('/api/buses', busRoutes);
+app.use('/api/tickets', ticketRoutes);
 
 //connect to mongodb
-connectDB().then(() => {
-    //listen for requests 
-    app.listen(process.env.PORT, () => {
-        console.log('connected to the database and listening for request on port', process.env.PORT);
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => {
+        app.listen(process.env.PORT, () => {
+            console.log(`Connected to MongoDB and listening on port ${process.env.PORT}`);  
+        });
+
+    })
+    .catch((error) => {
+        console.error('Error connecting to MongoDB:', error);
     });
-}).catch((error) => {
-    console.log('Failed to connect to MongoDB', error);
-});
+

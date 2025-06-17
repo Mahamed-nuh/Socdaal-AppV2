@@ -99,12 +99,6 @@ const handleBooking = async () => {
     },
   });
 
-  console.log({
-    from, to, busDate, busTime, company,
-    seats: selectedSeats.join(','),
-    totalPrice: totalPrice.toString(),
-    price: numericPrice.toString()
-  });
 };
 
 
@@ -142,7 +136,7 @@ const handleBooking = async () => {
           <Text className="text-gray-600">{busTime}</Text>
           <Text className="text-gray-600">{durationTime}h</Text>
         </View>
-        <Text className="text-green-500 mt-2">10 Kursi</Text>
+        <Text className="text-green-500 mt-2">{seats} qof aya hadhey</Text>
       </View>
 
       {/* Seat Legend */}
