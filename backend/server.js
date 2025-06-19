@@ -1,11 +1,16 @@
 const express = require('express');
 require('dotenv').config();
+const cors = require('cors');
 const busRoutes = require('./routes/Buses')
 const mongoose = require('mongoose');
 const ticketRoutes = require('./routes/Tickets');
 
 //express app
 const app = express();
+
+
+// ✅ Enable CORS
+app.use(cors());
 
 //middleware
 app.use(express.json()); // to parse JSON bodies

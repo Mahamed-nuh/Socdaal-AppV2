@@ -10,7 +10,7 @@ import {
 import { CreditCard, DollarSign } from 'lucide-react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useUser } from '../../hooks/useUser';
-import { useBooking } from '../../hooks/useBooking';
+import axios from 'axios';
 
 const PaymentMethod = ({ icon, name, selected, onSelect }) => (
   <TouchableOpacity
@@ -29,7 +29,6 @@ const PaymentsScreen = () => {
   const [senderNumber, setSenderNumber] = useState('');
   const router = useRouter();
   const { user } = useUser();
-  const { createBooking } = useBooking();
 
   const {
     from,
@@ -42,36 +41,51 @@ const PaymentsScreen = () => {
     price,
   } = useLocalSearchParams();
 
-  const handlePayment = async () => {
-    if (!senderNumber.trim()) {
-      Alert.alert("Error", "Fadlan geli numberka lagasoo dirayo.");
-      return;
-    }
 
-    const seatArray = seats.split(',');
+const handlePayment = async () => {
+  if (!senderNumber.trim()) {
+    Alert.alert("Error", "Fadlan geli numberka lagasoo dirayo.");
+    return;
+  }
 
+  const seatArray = seats.split(',');
+
+  try {
     for (const seatId of seatArray) {
-      const success = await createBooking({
-        from: from,
-        to: to,
-        busdate: busDate,
-        bustime: busTime,
-        company: company,
-        seatId: seatId,
+      // Changed URL to match backend route and use HTTP
+      const response = await axios.post("http://192.168.11.107:3000/api/tickets", {
         userId: user?.$id,
         userName: user?.name,
-        price: price,
+        company,
+        from,
+        to,
+        busTime,
+        busDate,
         paymentMethod: selectedMethod,
         bookedNumber: senderNumber,
+
       });
 
-      if (!success) {
-        Alert.alert("Error", "Failed to complete booking. Please try again.");
+      // Check if response is successful
+      if (response.status === 201) {
+        console.log("✅ Ticket created:", response.data);
+      } else {
+        console.warn("⚠️ Unexpected response:", response.status);
+        Alert.alert("Error", "Failed to create ticket.");
         return;
       }
     }
-    router.push('/(tabs)/tickets'); // redirect to tickets or success page
-  };
+
+    // All tickets created successfully
+    console.log("✅ All tickets created. Redirecting...");
+    router.push("/(tabs)/tickets");
+
+  } catch (error) {
+    console.error("❌ Ticket creation error:", error);
+    Alert.alert("Error", "Failed to complete booking. Please try again.");
+  }
+};
+
 
   return (
     <ScrollView className="flex-1 bg-white">

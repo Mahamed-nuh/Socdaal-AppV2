@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { ChevronLeft, ArrowLeftRight } from 'lucide-react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useUser } from '../../hooks/useUser';
-import { useBooking } from '../../hooks/useBooking'; // <-- import your booking hook
+import axios from 'axios';
 
 const seatColors = {
   driver: 'bg-blue-500',
@@ -18,7 +18,6 @@ export default function SeatSelectionScreen({ navigation }) {
   const [bookedSeatIds, setBookedSeatIds] = useState([]);
   const router = useRouter();
   const { user } = useUser();
-  const { createBooking, getBookedSeats } = useBooking(); // <-- use the booking hook here
 
   const {
     company,
@@ -39,22 +38,37 @@ export default function SeatSelectionScreen({ navigation }) {
     ['available', 'available'],
     ['available', 'available'],
   ];
+  // fetch booked seats from the server
+useEffect(() => {
+  const fetchBooked = async () => {
+    if (!from || !to || !busDate || !busTime || !company) {
+      console.error("Missing trip parameters", { from, to, busDate, busTime, company });
+      return;
+    }
 
-  // Fetch booked seats on mount
-    useEffect(() => {
-      const fetchBooked = async () => {
-        if (!from || !to || !busDate || !busTime || !company) {
-          console.error("Missing trip parameters", { from, to, busDate, busTime, company });
-          return;
+    try {
+      const response = await axios.get(
+        'http://192.168.11.107:3000/api/tickets/booked-seats', // Adjust the URL to your backend endpoint
+        {
+          params: {
+            from,
+            to,
+            busDate,
+            busTime,
+            company,
+          },
         }
+      );
+      setBookedSeatIds(response.data);
+      console.log("Booked seats fetched successfully:", response.data);
+    } catch (error) {
+      console.error("Failed to fetch booked seats:", error);
+      Alert.alert("Error", "Failed to load booked seats.");
+    }
+  };
 
-        const booked = await getBookedSeats(from, to, busDate, busTime, company);
-        setBookedSeatIds(booked);
-      };
-
-      fetchBooked();
-    }, []);
-
+  fetchBooked();
+}, []);
 
 
 const handleSeatPress = (rowIndex, colIndex) => {
@@ -100,8 +114,6 @@ const handleBooking = async () => {
   });
 
 };
-
-
 
 
   return (

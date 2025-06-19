@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const ticketSchema = new Schema({
     userId: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
         ref: 'User',
         required: true
     },
