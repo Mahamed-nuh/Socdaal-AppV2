@@ -1,60 +1,41 @@
-import { useUser } from "@/hooks/useUser";
-import { databases } from "@/lib/appwrite";
-import { createContext, useEffect, useState } from "react";
-import { ID, Permission, Query, Role } from "react-native-appwrite";
+import { createContext, useReducer } from "react";
 
-const DATABASE_ID = "682a4550002a8aead0a9";
-const COLLECTION_ID = "682a45ca00305c819f16";
 
-export const TicketContext = createContext();
+export const TicketContext = createContext()
 
-export const TicketProvider = ({ children }) => {
-    const [Ticket, setTicket] = useState([]);
-    const { user } = useUser();
 
-    async function createTicket(data) {
-        try {
-            const newTicket = await databases.createDocument(
-                DATABASE_ID,
-                COLLECTION_ID,
-                ID.unique(),
-                {...data, userId: user.$id },
-                [
-                    Permission.read(Role.user(user.$id)),
-                    Permission.update(Role.user(user.$id)),
-                    Permission.delete(Role.user(user.$id)),
-                ]
-            )
-        } catch (error) {
-            console.error(error.message);
-        }
+export const TicketReducer = (state, action) => {
+    switch (action.type) {
+        case 'SET_TICKETS':
+        return {
+            ...state,
+            tickets: action.payload
+        };
+        case 'ADD_TICKET':
+        return {
+            ...state,
+            tickets: [...state.tickets, action.payload]
+        };
+        case 'REMOVE_TICKET':
+        return {
+            ...state,
+            tickets: state.tickets.filter(ticket => ticket.id !== action.payload)
+        };
+        default:
+        return state;
     }
-
-    async function getTicket() {
-        try {
-            const response = await databases.listDocuments(
-                DATABASE_ID,
-                COLLECTION_ID,)
-            setTicket(response.documents);
-            console.log(response.documents);
-        } catch (error) {
-            console.error(error.message);
-        }
-    }
-
-    useEffect(() => {
-        if (user) {
-            getTicket();
-        } else {
-            setTicket([]);
-        }
-    }, [user]);
-
-    return (
-        <TicketContext.Provider value={{ Ticket, setTicket, createTicket, getTicket }}>
-            {children}
-        </TicketContext.Provider>
-    );
 }
 
 
+
+export const TicketProvider = ({ children }) => {
+  const [state, dispatch] = useReducer(TicketReducer, {
+    tickets: null
+  })
+
+  return (
+    <TicketContext.Provider value={{...state, dispatch }}>
+      {children}
+    </TicketContext.Provider>
+  )
+}

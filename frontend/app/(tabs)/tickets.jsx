@@ -1,12 +1,35 @@
-import { useBooking } from '@/hooks/useBooking';
-import { useEffect } from 'react';
+import { useUser } from '@/hooks/useUser';
+import { useEffect, useState } from 'react';
 import { View, Text, SafeAreaView, FlatList } from 'react-native';
 
 export default function MyTicketsScreen() {
-  const { bookedSeats, fetchBookingsByUserId } = useBooking();
+  const { user } = useUser();
 
+  const [bookedSeats, setBookedSeats] = useState([]); // <-- Add this line
+
+  // fetch tickets by userId
   useEffect(() => {
-    fetchBookingsByUserId();
+    const fetchTickets = async () => {
+      try {
+      const userId = user?.$id; // Get the user ID from the user object
+
+      const response = await fetch(`http://192.168.11.107:3000/api/tickets?userId=${userId}`);
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        // Assuming the response contains an array of tickets
+        setBookedSeats(data);
+
+
+      } catch (error) {
+        console.error('Error fetching tickets:', error);
+        setBookedSeats([]); // Handle error by setting an empty array
+      }
+
+    }
+    fetchTickets();
   }, []);
 
   return (

@@ -7,7 +7,6 @@ import 'react-native-reanimated';
 import '@/global.css';
 import { UserProvider } from '../context/UserContext';
 import { TicketProvider } from '@/context/TicketContext';
-import { BookingProvider } from '@/context/BookingContext';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();

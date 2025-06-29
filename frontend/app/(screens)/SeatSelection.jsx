@@ -59,7 +59,8 @@ useEffect(() => {
           },
         }
       );
-      setBookedSeatIds(response.data);
+      setBookedSeatIds(response.data.map(String)); // Convert to strings
+
       console.log("Booked seats fetched successfully:", response.data);
     } catch (error) {
       console.error("Failed to fetch booked seats:", error);

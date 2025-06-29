@@ -1,7 +1,15 @@
 const express = require('express');
 const Ticket = require('../models/ticketModel');
 
-
+// Get all tickets 
+const getAllTickets = async (req, res) => {
+    try {
+        const tickets = await Ticket.find({}).sort({ createdAt: -1 });
+        res.status(200).json(tickets);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
 
 // Get all tickets by userId
 const getTicketsByUserId = async (req, res) => {
@@ -83,6 +91,7 @@ module.exports = {
     createTicket,
     getBookedSeatsByBusDetails,
     deleteTicket,
-    updateTicket
+    updateTicket,
+    getAllTickets
     
 };

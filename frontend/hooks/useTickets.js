@@ -1,14 +1,11 @@
 import { useContext } from "react";
 import { TicketContext } from "@/context/TicketContext";
 
-// Rename the hook to useTickets to avoid naming conflict with the context
-export function useTickets() {
-    const context = useContext(TicketContext);
 
-
-    if (!context) {
+export const useTickets = () => {
+    const TicketContext = useContext(TicketContext);
+    if (!TicketContext) {
         throw new Error("useTickets must be used within a TicketProvider");
     }
-
-    return context;
+    return TicketContext;
 }

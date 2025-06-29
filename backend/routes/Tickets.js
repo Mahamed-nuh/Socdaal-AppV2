@@ -1,5 +1,5 @@
 const express = require('express');
-const { getTicketsByUserId, createTicket, getBookedSeatsByBusDetails, deleteTicket, updateTicket } = require('../controllers/ticketController');  
+const { getTicketsByUserId, createTicket, getBookedSeatsByBusDetails, deleteTicket, updateTicket,getAllTickets } = require('../controllers/ticketController');  
 
 
 const router = express.Router();
@@ -23,5 +23,8 @@ router.delete('/:id', deleteTicket);
 
 // Update a ticket by id
 router.patch('/:id', updateTicket);
+
+// Get all tickets
+router.get('/', getAllTickets);
 
 module.exports = router;
