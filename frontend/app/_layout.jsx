@@ -1,5 +1,4 @@
 import { Stack } from 'expo-router';
-import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
 import { useColorScheme } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
@@ -7,6 +6,7 @@ import 'react-native-reanimated';
 import '@/global.css';
 import { UserProvider } from '../context/UserContext';
 import { TicketProvider } from '@/context/TicketContext';
+import { BookingProvider } from '@/context/BookingContext';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -24,13 +24,10 @@ export default function RootLayout() {
     <UserProvider>  
       <TicketProvider>
         <BookingProvider>
-          <ThemeProvider value={colorScheme === 'FF5A5A' ? DarkTheme : DefaultTheme}>
-            <Stack screenOptions={{ headerShown: false }}>
-              {/* expo-router will auto handle (auth) and (tabs)/tabs.jsx */}
-            </Stack>
-
-            <StatusBar style="auto" />
-          </ThemeProvider>
+          <Stack screenOptions={{ headerShown: false }}>
+            {/* expo-router will auto handle (auth) and (tabs)/tabs.jsx */}
+          </Stack>
+          <StatusBar style="auto" />
         </BookingProvider>
       </TicketProvider>
     </UserProvider>

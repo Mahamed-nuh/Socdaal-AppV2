@@ -7,7 +7,10 @@
     "icon": "./assets/images/icon.png",
     "scheme": "frontend",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "jsEngine": "hermes",
+    "experiments": {
+    "tsconfigPaths": true
+  },
     "ios": {
       "supportsTablet": true
     },
@@ -15,8 +18,7 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      },
-      "edgeToEdgeEnabled": true
+      }
     },
     "web": {
       "bundler": "metro",
@@ -33,7 +35,10 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      "@react-native-community/datetimepicker",
+      "expo-font",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true
