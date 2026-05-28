@@ -10,7 +10,7 @@ import {
 import { CreditCard, DollarSign } from 'lucide-react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useUser } from '../../hooks/useUser';
-import axios from 'axios';
+import { createTicket } from '../../lib/seatapi'; // Import Appwrite api
 
 const PaymentMethod = ({ icon, name, selected, onSelect }) => (
   <TouchableOpacity
@@ -52,8 +52,7 @@ const handlePayment = async () => {
 
   try {
     for (const seatId of seatArray) {
-      // Changed URL to match backend route and use HTTP
-      const response = await axios.post("http://192.168.11.107:3000/api/tickets", {
+      const ticketId = await createTicket({
         userId: user?.$id,
         userName: user?.name,
         company,
@@ -63,22 +62,19 @@ const handlePayment = async () => {
         busDate,
         paymentMethod: selectedMethod,
         bookedNumber: senderNumber,
-
+        seatId: seatId.trim(),
+        price: price, // Added price to the payload
       });
 
-      // Check if response is successful
-      if (response.status === 201) {
-        console.log("✅ Ticket created:", response.data);
-      } else {
-        console.warn("⚠️ Unexpected response:", response.status);
-        Alert.alert("Error", "Failed to create ticket.");
+      if (!ticketId) {
+        Alert.alert("Error", "Gadaal kuceli, cilad ayaa dhacday.");
         return;
       }
     }
 
     // All tickets created successfully
     console.log("✅ All tickets created. Redirecting...");
-    router.push("/(tabs)/tickets");
+    router.navigate("/(tabs)/tickets");
 
   } catch (error) {
     console.error("❌ Ticket creation error:", error);

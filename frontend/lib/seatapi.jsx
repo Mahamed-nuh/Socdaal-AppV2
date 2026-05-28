@@ -59,27 +59,45 @@ export const bookSeats = async ({ from, to, busDate, busTime, company, selectedS
 };
 
 // create a ticket
-export const createTicket = async ({ from, to, busDate, busTime, company, selectedSeats, user }) => {
+export const createTicket = async ({ userId, userName, company, from, to, busTime, busDate, paymentMethod, bookedNumber, seatId, price }) => {
   try {
     const ticketId = ID.unique();
     await databases.createDocument(
       DATABASE_ID,
-      "682daddf003447b5d374",
+      COLLECTION_ID,
       ticketId,
       {
+        userId: userId,
+        userName: userName,
+        company,
         from,
         to,
-        busDate,
-        busTime,
-        company,
-        selectedSeats: JSON.stringify(selectedSeats),
-        userId: user.$id,
-        userName: user.name
+        bustime: busTime, // Matches Appwrite schema
+        busdate: busDate, // Matches Appwrite schema
+        paymentMethod,
+        bookedNumber,
+        seatId,
+        price: price ? price.toString() : "0"
       }
     );
     return ticketId;
   } catch (error) {
     console.error("Error creating ticket:", error);
     return null;
+  }
+};
+
+// get tickets for a user
+export const getUserTickets = async (userId) => {
+  try {
+    const response = await databases.listDocuments(
+      DATABASE_ID,
+      COLLECTION_ID,
+      [Query.equal("userId", userId), Query.orderDesc("$createdAt")]
+    );
+    return response.documents;
+  } catch (error) {
+    console.error("Error fetching user tickets:", error);
+    return [];
   }
 };  

@@ -42,16 +42,6 @@ const _layout = () => {
             ),
           }}
         />
-        <Tabs.Screen
-        name="BusSelection"
-        options={{
-          tabBarButton: () => null, // Hides the tab bar button
-          tabBarVisible: false, // Optional, hides the tab bar on that screen
-          headerShown: false,
-
-        }}
-        
-        />
       </Tabs>
     </UserOnly>
   );

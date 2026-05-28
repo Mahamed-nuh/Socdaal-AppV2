@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { ChevronLeft, ArrowLeftRight } from 'lucide-react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useUser } from '../../hooks/useUser';
-import axios from 'axios';
 
 const seatColors = {
   driver: 'bg-blue-500',
@@ -12,6 +11,8 @@ const seatColors = {
   selected: 'bg-[#FFA500]',
   empty: 'bg-gray-200',
 };
+
+import { getBookedSeats } from '../../lib/seatapi'; // Adjust the import path
 
 export default function SeatSelectionScreen({ navigation }) {
   const [selectedSeats, setSelectedSeats] = useState([]);
@@ -47,21 +48,10 @@ useEffect(() => {
     }
 
     try {
-      const response = await axios.get(
-        'http://192.168.11.107:3000/api/tickets/booked-seats', // Adjust the URL to your backend endpoint
-        {
-          params: {
-            from,
-            to,
-            busDate,
-            busTime,
-            company,
-          },
-        }
-      );
-      setBookedSeatIds(response.data.map(String)); // Convert to strings
+      const bookedData = await getBookedSeats(from, to, busDate, busTime, company);
+      setBookedSeatIds(bookedData.map(seat => String(seat.seatId)));
 
-      console.log("Booked seats fetched successfully:", response.data);
+      console.log("Booked seats fetched successfully:", bookedData);
     } catch (error) {
       console.error("Failed to fetch booked seats:", error);
       Alert.alert("Error", "Failed to load booked seats.");
